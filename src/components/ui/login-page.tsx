@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useRouter } from "next/navigation"
+import { createClient } from "@supabase/supabase-js"
 import { useState } from "react"
 
 export function LoginPage() {
@@ -9,26 +11,32 @@ export function LoginPage() {
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const router = useRouter()
+
+  // Skapa Supabase-klient (lägg in din URL och KEY i miljövariabler eller direkt här vid behov)
+  const supabase = createClient(
+    "https://coevosasjxptdtiwkodc.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNvZXZvc2FzanhwdGR0aXdrb2RjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyOTM0NTEsImV4cCI6MjA2NDg2OTQ1MX0.A7Mv5y_RxnavODgb8FaUKbg_1jEmSq1PVxN7Uh1zNQI"
+  )
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError("")
-    // Här kan du byta ut URL till din riktiga auth-endpoint
     try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       })
-      if (!res.ok) throw new Error("Fel e-post eller lösenord")
-      const data = await res.json()
-      if (data.token) {
-        localStorage.setItem("token", data.token)
-        window.location.href = "/dashboard"
+      if (error) {
+        setError(error.message)
+        console.error(error)
+      } else {
+        router.push("/dashboard")
       }
     } catch (err: any) {
-      setError(err.message || "Något gick fel")
+      setError("Något gick fel")
+      console.error(err)
     } finally {
       setLoading(false)
     }
