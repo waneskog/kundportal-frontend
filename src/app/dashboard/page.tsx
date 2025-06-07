@@ -1,5 +1,11 @@
 'use client'
 import { useState, useRef } from 'react'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  'https://coevosasjxptdtiwkodc.supabase.co',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export default function Dashboard() {
   const [file, setFile] = useState<File | null>(null)
@@ -13,22 +19,14 @@ export default function Dashboard() {
     setUploading(true)
     setMessage('')
     try {
-      const token = localStorage.getItem('token')
-      if (!token) throw new Error('Ingen token, logga in igen!')
-      const formData = new FormData()
-      formData.append('file', file)
-      const res = await fetch('http://localhost:4000/api/upload', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formData,
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message || 'Uppladdning misslyckades')
-      setMessage('Uppladdning lyckades! Filnamn: ' + data.originalname)
+      // Ladda upp filen till Supabase Storage (bucket: "uploads")
+      const { data, error } = await supabase.storage.from('uploads').upload(file.name, file, { upsert: true })
+      if (error) throw error
+      setMessage('Uppladdning lyckades! Filnamn: ' + file.name)
       setFile(null)
       if (fileInput.current) fileInput.current.value = ''
     } catch (err: any) {
-      setMessage(err.message)
+      setMessage(err.message || 'Uppladdning misslyckades')
     } finally {
       setUploading(false)
     }
