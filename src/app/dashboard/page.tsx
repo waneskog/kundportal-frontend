@@ -20,13 +20,13 @@ export default function Dashboard() {
     setMessage('')
     try {
       // Ladda upp filen till Supabase Storage (bucket: "uploads")
-      const { data, error } = await supabase.storage.from('uploads').upload(file.name, file, { upsert: true })
+      const { error } = await supabase.storage.from('uploads').upload(file.name, file, { upsert: true })
       if (error) throw error
       setMessage('Uppladdning lyckades! Filnamn: ' + file.name)
       setFile(null)
       if (fileInput.current) fileInput.current.value = ''
-    } catch (err: any) {
-      setMessage(err.message || 'Uppladdning misslyckades')
+    } catch (err) {
+      setMessage((err instanceof Error ? err.message : 'Uppladdning misslyckades'))
     } finally {
       setUploading(false)
     }
