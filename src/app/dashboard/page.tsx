@@ -1,11 +1,7 @@
-'use client'
 import { useState, useRef } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabaseClient'
 
-const supabase = createClient(
-  'https://coevosasjxptdtiwkodc.supabase.co',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+const supabase = createClient()
 
 export default function Dashboard() {
   const [file, setFile] = useState<File | null>(null)
