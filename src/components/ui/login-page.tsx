@@ -18,7 +18,7 @@ export function LoginPage() {
   // Skapa Supabase-klient (lägg in din URL och KEY i miljövariabler eller direkt här vid behov)
   const supabase = createClient(
     "https://coevosasjxptdtiwkodc.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNvZXZvc2FzanhwdGR0aXdrb2RjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyOTM0NTEsImV4cCI6MjA2NDg2OTQ1MX0.A7Mv5y_RxnavODgb8FaUKbg_1jEmSq1PVxN7Uh1zNQI"
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
   async function handleSubmit(e: React.FormEvent) {
